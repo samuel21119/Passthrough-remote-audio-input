@@ -18,7 +18,7 @@
 
 ## How the scripts work
 Server: send sampled data via socket  
-Client: listen server's socket and output the data to an output device. 
+Client: listen server's socket and write the data to an output device. 
 The output signal will be converted to microphone input source via either VB-Cable or Blackhole.
 
 ## Audio output to input
