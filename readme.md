@@ -9,6 +9,7 @@
 - channels
 - rate
 - chunk
+- max_threashold: avoid cracking sound if the input volume is TOO loud
 ### Client
 - format
 - channels

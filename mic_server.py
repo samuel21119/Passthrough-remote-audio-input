@@ -48,7 +48,7 @@ class reduce_noise:
 
 
 
-def mic_server(port=9487, format=pyaudio.paInt16, formatnp=np.int16, channels=1, rate=44100, chunk=1024):
+def mic_server(port=9487, format=pyaudio.paFloat32, formatnp=np.float32, channels=1, rate=48000, chunk=1024, max_threshold=0.5):
     print(f"Streaming port: {port}\nchannels: {channels}\nrate: {rate} Hz\nchunk: {chunk}")
 
     max_int = 2 ** (np.dtype(formatnp).itemsize * 8 - 1)
@@ -62,7 +62,14 @@ def mic_server(port=9487, format=pyaudio.paInt16, formatnp=np.int16, channels=1,
 
     rn = reduce_noise(chunk, formatnp)
     def reduceNoise(string_audio_data):
-        return string_audio_data
+        ret = string_audio_data
+        x = np.fromstring(string_audio_data, dtype=formatnp)
+        mx = np.max(x)
+        if (mx > max_threshold):
+            x = x * max_threshold / mx
+            ret = x.tostring()
+        print(np.max(x))
+        return ret
         # return rn.run(string_audio_data)
         # pass
 

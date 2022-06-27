@@ -7,7 +7,7 @@ from time import sleep
 
 import pyaudio
 
-def mic_client(format=pyaudio.paInt16, channels=1, rate=44100, chunk=1024, output_device_name="CABLE Input (VB-Audio Virtual C", ip="10.0.0.5",  port="9487"):
+def mic_client(format=pyaudio.paFloat32, channels=1, rate=48000, chunk=1024, output_device_name="CABLE Input (VB-Audio Virtual C", ip="10.0.0.5",  port="9487"):
     # # ------- Start config -------
     # format = pyaudio.paFloat32
     # channels = 1
@@ -68,4 +68,4 @@ if __name__ == '__main__':
     if len(sys.argv) > 2:
         mic_client(ip=sys.argv[1], port=sys.argv[2])
     else:
-        mic_client()
+        mic_client(output_device_name="BlackHole 2ch")
