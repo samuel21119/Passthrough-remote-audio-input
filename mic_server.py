@@ -65,10 +65,9 @@ def mic_server(port=9487, format=pyaudio.paFloat32, formatnp=np.float32, channel
         ret = string_audio_data
         x = np.fromstring(string_audio_data, dtype=formatnp)
         mx = np.max(x)
-        if (mx > max_threshold):
+        if mx > max_threshold:
             x = x * max_threshold / mx
             ret = x.tostring()
-        print(np.max(x))
         return ret
         # return rn.run(string_audio_data)
         # pass
