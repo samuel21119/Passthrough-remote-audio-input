@@ -5,6 +5,7 @@ import socket
 import select
 import numpy as np
 import yaml
+from notifypy import Notify
 
 class reduce_noise:
     # fuck u ignals and systems
@@ -58,9 +59,14 @@ def mic_server(port=9487, format=pyaudio.paFloat32, formatnp=np.float32, channel
             global can_send
             can_send = not can_send
             if can_send:
-                print("Unmute")
+                msg = "Unmuted"
             else:
-                print("Mute")
+                msg = "Muted"
+            notification = Notify()
+            notification.title = "Passthrough mic [server]"
+            notification.message = msg
+            notification.send()
+            
         key_listener = listen(mute["hotkey"], toggle)
         key_listener.start()
 
