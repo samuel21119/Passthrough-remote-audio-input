@@ -131,6 +131,7 @@ def mic_server(port=9487, format=pyaudio.paFloat32, formatnp=np.float32, channel
     stream.stop_stream()
     stream.close()
     audio.terminate()
+    key_listener.stop()
 
 
 if __name__ == '__main__':
