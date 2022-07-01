@@ -5,3 +5,6 @@ chunk: 1024
 max_threshold: 0.5
 ip: "10.10.10.1"
 output_device_name: "CABLE Input (VB-Audio Virtual C"
+mute:
+  enable: True
+  hotkey: "<shift>+<ctrl>+<alt>+a"

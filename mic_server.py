@@ -49,8 +49,21 @@ class reduce_noise:
 
 
 
-def mic_server(port=9487, format=pyaudio.paFloat32, formatnp=np.float32, channels=1, rate=48000, chunk=1024, max_threshold=0.5):
+can_send = True
+def mic_server(port=9487, format=pyaudio.paFloat32, formatnp=np.float32, channels=1, rate=48000, chunk=1024, max_threshold=0.5, mute={"enable": False}):
     print(f"Streaming port: {port}\nchannels: {channels}\nrate: {rate} Hz\nchunk: {chunk}")
+    if mute["enable"]:
+        from listen import listen
+        def toggle():
+            global can_send
+            can_send = not can_send
+            if can_send:
+                print("Unmute")
+            else:
+                print("Mute")
+        key_listener = listen(mute["hotkey"], toggle)
+        key_listener.start()
+
 
     max_int = 2 ** (np.dtype(formatnp).itemsize * 8 - 1)
 
@@ -71,14 +84,17 @@ def mic_server(port=9487, format=pyaudio.paFloat32, formatnp=np.float32, channel
             ret = x.tobytes()
         return ret
         # return rn.run(string_audio_data)
-        # pass
 
     out_stream = audio.open(format=format, channels=channels, rate=rate, output=True, frames_per_buffer=chunk)
     def callback(in_data, frame_count, time_info, status):
-        to_send = reduceNoise(in_data)
-        # out_stream.write(to_send)
-        for s in read_list[1:]:
-            s.send(to_send)
+        if can_send:
+            to_send = reduceNoise(in_data)
+            # out_stream.write(to_send)
+            for s in read_list[1:]:
+                s.send(to_send)
+        else:
+            for s in read_list[1:]:
+                s.send(b"muted")
         return (None, pyaudio.paContinue)
 
 
@@ -120,5 +136,5 @@ def mic_server(port=9487, format=pyaudio.paFloat32, formatnp=np.float32, channel
 if __name__ == '__main__':
     with open("config.yaml", "r") as config:
         d = yaml.safe_load(config)
-        mic_server(port=d["port"], channels=d["channels"], rate=d["rate"], chunk=d["chunk"], max_threshold=d["max_threshold"])
+        mic_server(port=d["port"], channels=d["channels"], rate=d["rate"], chunk=d["chunk"], max_threshold=d["max_threshold"], mute=d["mute"])
 

@@ -38,13 +38,21 @@ def mic_client(format=pyaudio.paFloat32, channels=1, rate=48000, chunk=1024, out
     s.connect(connect_source)
     audio = pyaudio.PyAudio()
     stream = audio.open(format=format, channels=channels, rate=rate, output=True, output_device_index=output_device, frames_per_buffer=chunk)
-
+    can_send = True
     try:
         while True:
             try:
                 data = s.recv(chunk)
-                s.send( bytes( "Client wave", "UTF-8" ) )
-                stream.write(data)
+                s.send(bytes( "Client wave", "UTF-8" ))
+                if (data == b"muted"):
+                    if (can_send == True):
+                        print("Muted")
+                    can_send = False
+                else:
+                    stream.write(data)
+                    if (can_send == False):
+                        print("Unmuted")
+                    can_send = True
             except socket.error:
                 connected = False
                 s = socket.socket()
