@@ -3,6 +3,7 @@
 import pyaudio
 import socket
 import sys
+import yaml
 from time import sleep
 
 import pyaudio
@@ -65,7 +66,6 @@ def mic_client(format=pyaudio.paFloat32, channels=1, rate=48000, chunk=1024, out
     audio.terminate()
 
 if __name__ == '__main__':
-    if len(sys.argv) > 2:
-        mic_client(ip=sys.argv[1], port=sys.argv[2])
-    else:
-        mic_client(output_device_name="BlackHole 2ch")
+    with open("config.yaml", "r") as config:
+        d = yaml.safe_load(config)
+        mic_client(port=d["port"], channels=d["channels"], rate=d["rate"], chunk=d["chunk"], output_device_name=d["output_device_name"], ip=d["ip"])

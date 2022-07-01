@@ -4,6 +4,7 @@ import pyaudio
 import socket
 import select
 import numpy as np
+import yaml
 
 class reduce_noise:
     # fuck u ignals and systems
@@ -26,7 +27,7 @@ class reduce_noise:
         # self.buffer = np.zeros(chunk * 2)
     def run(self, string_audio_data):
 
-        audio_data = np.fromstring(string_audio_data, dtype=self.dtype)
+        audio_data = np.frombuffer(string_audio_data, dtype=self.dtype)
         print(audio_data)
         normalized_data = audio_data
         freq_data = np.fft.fft(normalized_data)
@@ -43,7 +44,7 @@ class reduce_noise:
         # audio_data = np.array(np.round_(synth[self.chunk:] * self.max_int), dtype=self.dtype)
         print(audio_data)
         print("-"*10)
-        string_audio_data = audio_data.tostring()
+        string_audio_data = audio_data.tobytes()
         return string_audio_data
 
 
@@ -63,11 +64,11 @@ def mic_server(port=9487, format=pyaudio.paFloat32, formatnp=np.float32, channel
     rn = reduce_noise(chunk, formatnp)
     def reduceNoise(string_audio_data):
         ret = string_audio_data
-        x = np.fromstring(string_audio_data, dtype=formatnp)
+        x = np.frombuffer(string_audio_data, dtype=formatnp)
         mx = np.max(x)
         if mx > max_threshold:
             x = x * max_threshold / mx
-            ret = x.tostring()
+            ret = x.tobytes()
         return ret
         # return rn.run(string_audio_data)
         # pass
@@ -117,4 +118,7 @@ def mic_server(port=9487, format=pyaudio.paFloat32, formatnp=np.float32, channel
 
 
 if __name__ == '__main__':
-    mic_server(port=9487)
+    with open("config.yaml", "r") as config:
+        d = yaml.safe_load(config)
+        mic_server(port=d["port"], channels=d["channels"], rate=d["rate"], chunk=d["chunk"], max_threshold=d["max_threshold"])
+

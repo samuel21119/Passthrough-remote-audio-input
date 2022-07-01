@@ -1,0 +1,7 @@
+port: 9487
+channels: 1
+rate: 48000
+chunk: 1024
+max_threshold: 0.5
+ip: "10.10.10.1"
+output_device_name: "CABLE Input (VB-Audio Virtual C"
